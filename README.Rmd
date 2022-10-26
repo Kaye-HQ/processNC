@@ -1,5 +1,5 @@
 ---
-title: "processNC - R Package for processing and analysing (large) NetCDF files"
+title: "processNC: R Package for processing and analysing (large) NetCDF files"
 output: github_document
 editor_options: 
   chunk_output_type: console
