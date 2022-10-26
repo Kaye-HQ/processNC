@@ -1,4 +1,4 @@
-processNC - R Package for processing and analysing (large) NetCDF files
+processNC: R Package for processing and analysing (large) NetCDF files
 ================
 
 ## Overview
