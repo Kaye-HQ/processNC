@@ -16,9 +16,11 @@
 #' aggregated data over specificed time period and area.
 #' 
 #' @examples
+#' \dontrun{
 #' files <- list.files(paste0(system.file(package="processNC"), "/extdata"), 
 #'                     pattern="tas.*\\.nc", full.names=TRUE)
 #' summariseRast(files=files[4], startdate=2001, enddate=2010, var="tas")
+#' }
 #' @export summariseRast
 #' @name summariseRast
 summariseRast <- function(files=files, startdate=NA, enddate=NA, ext=NA, var,
