@@ -4,17 +4,17 @@ processNC: R Package for processing and analysing (large) NetCDF files
 ## Overview
 
 `processNC` is an R package for processing and analysing NetCDF files in
-R. Small NetCDF files can easily be loaded into R using the `raster()`
-function from the `raster` package or nowadays also using the `rast()`
-function from the `terra` package in R, given that the `ncdf4` package
-is installed. However, using this approach the entire file is read into
-memory and so memory limits are reached quickly when trying to load
-large NetCDF files.
+R. NetCDF files can easily be loaded into R using the `rast()`
+function from the `terra` package in R or formerly also using the `raster()`
+function from the `raster` package. However, when trying to handle large 
+NetCDF files it might be more convenient to directly use the ncdf4 package
+or the Climate Data Operators software and this package provides a simplified
+wrapper for those two options.
 
 The need for this package arised from the task to load large NetCDF
 files with global daily climate data to calculate monthly or yearly
-averages. With this package this task can be achieved without having to
-read the entire file into memory.
+averages. With this package this task can be achieved in a much faster way and 
+without having to read the entire file into memory.
 
 ### NetCDF functions
 
