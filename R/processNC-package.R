@@ -17,7 +17,7 @@
 #' @importFrom dplyr funs group_by_at group_by summarise_all vars
 #' @importFrom lubridate year month
 #' @importFrom utils globalVariables
-
+#' @importFrom methods is
 #' @keywords package
 #'
 NULL

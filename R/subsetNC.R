@@ -26,11 +26,11 @@ subsetNC <- function(files, startdate=NA, enddate=NA, ext="",
     r <- terra::rast(filename)
   } else{
     mask <- NA
-    if(class(ext) != "Extent"){
-      if(class(ext) == "SpatVector"){
+    if(any(is(ext) != "Extent")){
+      if(is(ext, "SpatVector")){
         mask <- ext
         ext <- terra::ext(ext)
-      } else if(class(ext) == "SpatRaster"){
+      } else if(is(ext, "SpatRaster")){
         ext <- terra::ext(ext)
       } else if(any(ext != "")){
         ext <- terra::ext(ext)
@@ -52,8 +52,8 @@ subsetNC <- function(files, startdate=NA, enddate=NA, ext="",
     }
     
     # Convert start and endyear to dates
-    if(!is.na(startdate) & class(startdate) != "Date"){startdate <- as.Date(paste0(startdate, "-01-01"))}
-    if(!is.na(enddate) & class(enddate) != "Date"){enddate <- as.Date(paste0(enddate, "-01-01"))}
+    if(!is.na(startdate) & any(is(startdate) != "Date")){startdate <- as.Date(paste0(startdate, "-01-01"))}
+    if(!is.na(enddate) & any(is(enddate) != "Date")){enddate <- as.Date(paste0(enddate, "-01-01"))}
     
     # Obtain size and other specifications of file
     data <- lapply(files, FUN=function(a){
@@ -114,7 +114,7 @@ subsetNC <- function(files, startdate=NA, enddate=NA, ext="",
     # Turn into one stack
     data <- terra::rast(data)
     
-    if(class(mask) == "SpatVector"){
+    if(is(mask, "SpatVector")){
       data <- terra::mask(data, mask)
     }
     # Save to file

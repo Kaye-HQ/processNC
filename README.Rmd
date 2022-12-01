@@ -26,7 +26,7 @@ In addition there is also a function called `cellstatsNC()`, which calculates th
 
 ### Raster functions
 
-There is also a function called `summariseRaster`, which allows a similar implementation to the `summariseNC` function, but using any type of raster files rather than NetCDF files. And there is also an identical function `summariseRast`, which depends on the slightly faster `terra` package. However both of these functions are much more computationally intensive, than `summariseNC` (see Computation Time comparison further down below). 
+There is also a function called `summariseRaster`, which allows a similar implementation to the `summariseNC` function, but using any type of raster files rather than NetCDF files. And there is also an identical function `summariseRast`, which depends on the slightly faster `terra` package. See benchmark example further down below for a comparison of computation time between the three functions. 
 
 ### CDO functions
 
@@ -187,7 +187,7 @@ plot(temp2[[1]])
 
 ### Summarise Raster file
 
-This can be achieve using:
+This can be achieved using:
 
 ```{r}
 summariseRaster(tas_files[4], startdate=2001, enddate=2010, var="tas")

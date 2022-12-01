@@ -41,9 +41,7 @@ Aggregate spatio-temporal measurements of one raster stack with daily layers
 for multiple years to a raster stack with monthly layers
 }
 \examples{
-\dontrun{
 files <- list.files(paste0(system.file(package="processNC"), "/extdata"), 
                     pattern="tas.*\\\\.nc", full.names=TRUE)
 summariseRast(files=files[4], startdate=2001, enddate=2010, var="tas")
-}
 }

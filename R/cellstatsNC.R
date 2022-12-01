@@ -22,16 +22,16 @@ cellstatsNC <- function(files, startdate=NA, enddate=NA, ext="", cores=NA, filen
     r_z <- utils::read.csv(filename)
   } else{
     mask <- NA
-    if(class(ext) != "Extent"){
-      if(class(ext) == "SpatialPolygonsDataFrame"){
-        mask <- ext
-        ext <- raster::extent(ext)
-      } else if(class(ext) == "RasterLayer"){
-        mask <- ext
-        ext <- raster::extent(ext)
-      } else if(any(ext != "")){
-        ext <- raster::extent(ext)
-      }
+    if(is(ext,"Extent")){
+      # Extent is already an extent object
+    } else if(is(ext, "SpatialPolygonsDataFrame")){
+      mask <- ext
+      ext <- raster::extent(ext)
+    } else if(is(ext, "RasterLayer")){
+      mask <- ext
+      ext <- raster::extent(ext)
+    } else if(any(ext != "")){
+      ext <- raster::extent(ext)
     }
     
     # Obtain size and other specifications of file
@@ -49,7 +49,7 @@ cellstatsNC <- function(files, startdate=NA, enddate=NA, ext="", cores=NA, filen
     count <- rep(1,ndims)
     
     # Specify x, y coordinates
-    if(class(ext) == "Extent"){
+    if(is(ext, "Extent")){
       start[1] <- min(which(lon >= raster::xmin(ext) & lon <=  raster::xmax(ext)))
       start <- as.numeric(start)
       end <-  max(which(lon >=  raster::xmin(ext) & lon <=  raster::xmax(ext)))
@@ -69,16 +69,19 @@ cellstatsNC <- function(files, startdate=NA, enddate=NA, ext="", cores=NA, filen
     timeref <- as.Date(strsplit(nc$dim[[nc$ndims]]$units, " ")[[1]][3]) 
     if(ncdf4::ncvar_get(nc, nc$dim$time)[1] == 0){
       time <- timeref + ncdf4::ncvar_get(nc, nc$dim$time)
-    }else if (ncdf4::ncvar_get(nc, nc$dim$time)[1] == 1){
+    } else if(ncdf4::ncvar_get(nc, nc$dim$time)[1] == 1){
       time <- timeref + ncdf4::ncvar_get(nc, nc$dim$time) - 1
     }
     
     # Define start date
     if(is.na(startdate)){
       startdate <- time[1]
-    } else if(class(startdate) != "Date"){
+    } else if(is(startdate, "Date")){
+      # startdate is already in Date format
+    } else {
       startdate <- as.Date(paste0(startdate, "-01-01"))
     }
+    
     # Close NC file again
     ncdf4::nc_close(nc)
     
@@ -93,7 +96,9 @@ cellstatsNC <- function(files, startdate=NA, enddate=NA, ext="", cores=NA, filen
       }
       enddate <- time[length(time)]
       ncdf4::nc_close(nc)
-    } else if(class(enddate) != "Date"){
+    } else if(is(enddate, "Date")){
+      # enddate is already in date formate
+    } else{
       enddate <-  as.Date(paste0(enddate, "-12-31"))
     }
     
@@ -145,7 +150,7 @@ cellstatsNC <- function(files, startdate=NA, enddate=NA, ext="", cores=NA, filen
           ncdf4::nc_close(nc)
           
           # Mask data and calculate mean
-          if(class(mask) == "SpatialPolygonsDataFrame" | class(mask) == "RasterLayer"){
+          if(is(mask, "SpatialPolygonsDataFrame") | is(mask, "RasterLayer")){
             # Re-arrange array
             data <- aperm(data, c(2,1,3))
             

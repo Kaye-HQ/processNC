@@ -31,7 +31,7 @@ summariseRaster <- function(files, startdate=NA, enddate=NA, ext=NA, var,
   if(overwrite==FALSE & file.exists(filename1)){
     avg <- raster::stack(filename1)
   } else{
-    if(class(files) %in% c("RasterLayer", "RasterStack", "RasterBrick")){
+    if(any(is(files) %in% c("RasterLayer", "RasterStack", "RasterBrick"))){
       data <- files
     } else{
       if(length(files) > 1){
@@ -43,20 +43,20 @@ summariseRaster <- function(files, startdate=NA, enddate=NA, ext=NA, var,
     }
     
     mask <- NA
-    if(class(ext) != "Extent"){
-      if(class(ext) == "SpatialPolygonsDataFrame"){
-        mask <- ext
-        ext <- raster::extent(ext)
-      } else if(class(ext) == "RasterLayer"){
-        mask <- ext
-        ext <- raster::extent(ext)
-      } else if(!anyNA(ext)){
-        ext <- raster::extent(ext)
-      }
+    if(is(ext, "Extent")){
+      # ext is already of class Extent
+    } else if(is(ext, "SpatialPolygonsDataFrame")){
+      mask <- ext
+      ext <- raster::extent(ext)
+    } else if(is(ext, "RasterLayer")){
+      mask <- ext
+      ext <- raster::extent(ext)
+    } else if(!anyNA(ext)){
+      ext <- raster::extent(ext)
     }
     
     # Crop data by extent
-    if(class(ext) == "Extent"){
+    if(is(ext, "Extent")){
       data <- raster::mask(raster::crop(data, ext), ext)
     }  
     
@@ -65,12 +65,12 @@ summariseRaster <- function(files, startdate=NA, enddate=NA, ext=NA, var,
     data <- raster::setZ(data, dates, 'date')
     
     # Define start date
-    if(!is.na(startdate) & class(startdate) != "Date"){
+    if(!is.na(startdate) & any(is(startdate) != "Date")){
       startdate <- as.Date(paste0(startdate, "-01-01"))
     }
     
     # Define end date
-    if(!is.na(enddate) & class(enddate) != "Date"){
+    if(!is.na(enddate) & any(is(enddate) != "Date")){
       enddate <-  as.Date(paste0(enddate, "-12-31"))
     }
     
@@ -88,6 +88,7 @@ summariseRaster <- function(files, startdate=NA, enddate=NA, ext=NA, var,
     }
     avg <- raster::zApply(avg, by=function(x) as.numeric(floor(lubridate::month(as.Date(paste0("01", x), format="%d %b %Y")))), 
                           fun=mean, name='months', na.rm=TRUE)
+    names(avg) <- month.name
     
     if(filename1 != ""){
       raster::writeRaster(avg, filename=filename1, format=format, overwrite=overwrite)
@@ -98,6 +99,6 @@ summariseRaster <- function(files, startdate=NA, enddate=NA, ext=NA, var,
                            fun=sum, name='months', na.rm=TRUE)
       raster::writeRaster(cv, filename=filename2, format=format, overwrite=overwrite)
     }
-  }; removeTmpFiles(h=0.01)
+  }; raster::removeTmpFiles(h=0.01)
   return(avg)
 }

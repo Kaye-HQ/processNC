@@ -4,25 +4,25 @@ processNC: R Package for processing and analysing (large) NetCDF files
 ## Overview
 
 `processNC` is an R package for processing and analysing NetCDF files in
-R. NetCDF files can easily be loaded into R using the `rast()`
-function from the `terra` package in R or formerly also using the `raster()`
-function from the `raster` package. However, when trying to handle large 
-NetCDF files it might be more convenient to directly use the ncdf4 package
-or the Climate Data Operators software and this package provides a simplified
-wrapper for those two options.
+R. NetCDF files can easily be loaded into R using the `rast()` function
+from the `terra` package in R or formerly also using the `raster()`
+function from the `raster` package. However, when trying to handle large
+NetCDF files it might be more convenient to directly use the ncdf4
+package or the Climate Data Operators software and this package provides
+a simplified wrapper for those two options.
 
 The need for this package arised from the task to load large NetCDF
 files with global daily climate data to calculate monthly or yearly
-averages. With this package this task can be achieved in a much faster way and 
-without having to read the entire file into memory.
+averages. With this package this task can be achieved in a much faster
+way and without having to read the entire file into memory.
 
 ### NetCDF functions
 
 For this, the package mainly consists of two functions:
 
--   `subsetNC()` subsets one or multiple NetCDF files by space (x,y),
-    time and/or variable
--   `summariseNC()` summarises one or multiple NetCDF files over time
+- `subsetNC()` subsets one or multiple NetCDF files by space (x,y), time
+  and/or variable
+- `summariseNC()` summarises one or multiple NetCDF files over time
 
 In addition there is also a function called `cellstatsNC()`, which
 calculates the spatial mean of one or multiple NetCDF files.
@@ -33,9 +33,8 @@ There is also a function called `summariseRaster`, which allows a
 similar implementation to the `summariseNC` function, but using any type
 of raster files rather than NetCDF files. And there is also an identical
 function `summariseRast`, which depends on the slightly faster `terra`
-package. However both of these functions are much more computationally
-intensive, than `summariseNC` (see Computation Time comparison further
-down below).
+package. See benchmark example further down below for a comparison of
+computation time between the three functions.
 
 ### CDO functions
 
@@ -81,7 +80,7 @@ library(raster)
 ``` r
 # List daily temperature files for Germany from 1979 till 2016
 tas_files <- list.files(paste0(system.file(package="processNC"), "/extdata"), 
-                    pattern="tas.*\\.nc", full.names=T)
+                        pattern="tas.*\\.nc", full.names=T)
 
 # Show files
 basename(tas_files)
@@ -94,7 +93,7 @@ basename(tas_files)
 ``` r
 # List daily precipitation files for Germany from 1979 till 2016
 pr_files <- list.files(paste0(system.file(package="processNC"), "/extdata"), 
-                    pattern="pr.*\\.nc", full.names=T)
+                       pattern="pr.*\\.nc", full.names=T)
 ```
 
 ### Subset NetCDF file
@@ -114,7 +113,7 @@ subsetNC(tas_files, ext=c(8.5, 14, 47, 51), startdate=1990, enddate=1999)
     names       : 1990-01-01, 1990-01-02, 1990-01-03, 1990-01-04, 1990-01-05, 1990-01-06, ... 
     min values  :   268.2550,   269.4496,   269.9260,   268.7616,   269.0258,   269.5515, ... 
     max values  :   272.5554,   272.0455,   272.0891,   272.1550,   273.2923,   274.2967, ... 
-    time        : 1990-01-01 to 1999-01-01 
+    time (days) : 1990-01-01 to 1999-01-01 
 
 ``` r
 # Get SpatialPolygonsDataFrame of Bavaria
@@ -141,9 +140,9 @@ subsetNC(tas_files, startdate=1990, enddate=1999)
     sources     : memory  (365 layers) 
                   memory  (2923 layers) 
     names       : 1990-01-01, 1990-01-02, 1990-01-03, 1990-01-04, 1990-01-05, 1990-01-06, ... 
-    min values  :   268.2550,   268.8760,   269.7884,   268.2937,   267.8489,   268.2939, ... 
-    max values  :   274.5740,   274.6320,   274.9313,   273.3459,   276.0111,   276.3013, ... 
-    time        : 1990-01-01 to 1999-01-01 
+    min values  :    268.255,    268.876,   269.7884,   268.2937,   267.8489,   268.2939, ... 
+    max values  :    274.574,    274.632,   274.9313,   273.3459,   276.0111,   276.3013, ... 
+    time (days) : 1990-01-01 to 1999-01-01 
 
 ### Summarise NetCDF file
 
@@ -174,8 +173,8 @@ summariseNC(files=tas_files[4], startdate=2001, enddate=2010, group_col=c("month
     coord. ref. :  
     source      : memory 
     names       : Apr 2001, Apr 2002, Apr 2003, Apr 2004, Apr 2005, Apr 2006, ... 
-    min values  : 276.3501, 277.1500, 277.6500, 278.5500, 277.1500, 278.3500, ... 
-    max values  : 282.3499, 283.8501, 284.3500, 284.7501, 284.6500, 283.6499, ... 
+    min values  : 276.3501, 277.1500,   277.65, 278.5500,   277.15, 278.3500, ... 
+    max values  : 282.3499, 283.8501,   284.35, 284.7501,   284.65, 283.6499, ... 
 
 ``` r
 # Summarise daily NetCDF file for 10 years by year
@@ -257,7 +256,7 @@ yearly_pr
     coord. ref. :  
     source      : memory 
     names       :       2000,       2001,       2002,       2003,       2004,       2005, ... 
-    min values  :          0,          0,          0,          0,          0,          0, ... 
+    min values  : 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.00000000, ... 
     max values  : 0.02125388, 0.02209105, 0.02318245, 0.01517012, 0.01880114, 0.02133196, ... 
 
 ``` r
@@ -304,7 +303,7 @@ head(yearmean_pr)
 
 ### Summarise NetCDF file using CDO commands
 
--   Filter years
+- Filter years
 
 ``` r
 temp <- tempfile(fileext=".nc")
@@ -312,7 +311,7 @@ filterNC(file=tas_files, startdate=2005, enddate=2007, outfile=temp)
 terra::plot(terra::rast(temp))
 ```
 
--   Crop files
+- Crop files
 
 ``` r
 temp <- tempfile(fileext=".nc")
@@ -320,7 +319,7 @@ cropNC(file=tas_files, ext=c(9, 13, 49, 51), outfile=temp)
 terra::plot(terra::rast(temp)) 
 ```
 
--   Mask files
+- Mask files
 
 ``` r
 temp <- tempfile(fileext=".nc")
@@ -328,7 +327,7 @@ maskNC(file=tas_files, ext=c(9, 13, 49, 51), outfile=temp)
 terra::plot(terra::rast(temp)) 
 ```
 
--   Merge files:
+- Merge files:
 
 ``` r
 temp <- tempfile(fileext=".nc")
@@ -336,7 +335,7 @@ mergeNC(files=tas_files, outfile=temp)
 terra::rast(temp)
 ```
 
--   Aggregate files:
+- Aggregate files:
 
 ``` r
 temp2 <- tempfile(fileext=".nc")
@@ -347,7 +346,7 @@ plot(temp2[[1]])
 
 ### Summarise Raster file
 
-This can be achieve using:
+This can be achieved using:
 
 ``` r
 summariseRaster(tas_files[4], startdate=2001, enddate=2010, var="tas")
@@ -359,9 +358,9 @@ summariseRaster(tas_files[4], startdate=2001, enddate=2010, var="tas")
     extent     : 6, 15, 47.5, 55  (xmin, xmax, ymin, ymax)
     crs        : +proj=longlat +datum=WGS84 +no_defs 
     source     : memory
-    names      :       X1,       X2,       X3,       X4,       X5,       X6,       X7,       X8,       X9,      X10,      X11,      X12 
-    min values : 269.8396, 271.0432, 273.9367, 278.2057, 283.1849, 286.2067, 288.3307, 287.7344, 283.7335, 280.3433, 275.1130, 270.7514 
-    max values : 276.1422, 277.0875, 280.0108, 284.4274, 288.8376, 292.0917, 294.0858, 293.1610, 289.0893, 284.8109, 280.7387, 276.4388 
+    names      :  January, February,    March,    April,      May,     June,     July,   August, September,  October, November, December 
+    min values : 269.8396, 271.0432, 273.9367, 278.2057, 283.1849, 286.2067, 288.3307, 287.7344,  283.7335, 280.3433, 275.1130, 270.7514 
+    max values : 276.1422, 277.0875, 280.0108, 284.4274, 288.8376, 292.0917, 294.0858, 293.1610,  289.0893, 284.8109, 280.7387, 276.4388 
     months     : 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 
 
 or:
@@ -376,10 +375,10 @@ summariseRast(tas_files[4], startdate=2001, enddate=2010, var="tas")
     extent      : 6, 15, 47.5, 55  (xmin, xmax, ymin, ymax)
     coord. ref. : lon/lat WGS 84 
     source      : memory 
-    names       :       X1,       X2,       X3,       X4,       X5,       X6, ... 
+    names       :  January, February,    March,    April,      May,     June, ... 
     min values  : 269.8396, 271.0432, 273.9367, 278.2057, 283.1849, 286.2067, ... 
     max values  : 276.1422, 277.0875, 280.0108, 284.4274, 288.8376, 292.0917, ... 
-    time        : 1 to 12 
+    time (raw)  : 1 to 12 
 
 **Note:** This should give the same output as the summariseNC()
 function!!!
@@ -388,24 +387,17 @@ function!!!
 
 ``` r
 library(rbenchmark)
-benchmark("summariseNC" = {
-            summariseNC(tas_files[4], startdate=2001, enddate=2010, group_col=c("year", "month"))
-          },
-          "summariseRast" = {
-            summariseRast(tas_files[4], startdate=2001, enddate=2010, var="tas")
-          },
-          "summariseRaster" = {
-            summariseRaster(tas_files[4], startdate=2001, enddate=2010, var="tas")
-          }, 
-          replications=1,
-          columns = c("test", "elapsed", "replications",
-                      "relative", "user.self", "sys.self"))
+benchmark("summariseNC" = {summariseNC(tas_files[4], startdate=2001, enddate=2010, 
+                                       group_col=c("year", "month"))},
+          "summariseRast" = {summariseRast(tas_files[4], startdate=2001, enddate=2010, var="tas")},
+          "summariseRaster" = {summariseRaster(tas_files[4], startdate=2001, enddate=2010, var="tas")}, 
+          replications=1, columns = c("test", "elapsed", "replications", "relative", "user.self", "sys.self"))
 ```
 
                  test elapsed replications relative user.self sys.self
-    1     summariseNC   7.790            1    1.782     0.254    0.347
-    2   summariseRast  59.156            1   13.531    59.010    0.142
-    3 summariseRaster   4.372            1    1.000     4.258    0.108
+    1     summariseNC  28.278            1    6.855     0.806    0.859
+    2   summariseRast  56.160            1   13.615    55.840    0.320
+    3 summariseRaster   4.125            1    1.000     4.065    0.056
 
 ### CellStats NetCDF file
 
@@ -439,8 +431,7 @@ mean_annual_prec <- aggregate(mean ~ year, mean_daily_prec, sum)
 
 library(ggplot2); library(patchwork)
 p1 <- ggplot() + geom_line(data=mean_annual_temp, aes(x=year, y=mean)) +
-  theme_bw() + labs(x="Year", y="Annual mean temperature (°C)") + 
-  ggtitle("Germany")
+  theme_bw() + labs(x="Year", y="Annual mean temperature (°C)") + ggtitle("Germany")
 p2 <- ggplot() + geom_line(data=mean_annual_prec, aes(x=year, y=mean)) +
   theme_bw() + labs(x="Year", y="Annual total precipitation")
 p1 / p2

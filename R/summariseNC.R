@@ -37,16 +37,16 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
     r_z <- terra::rast(filename1)
   } else{
     mask <- NA
-    if(class(ext) != "Extent"){
-      if(class(ext) == "SpatVector"){
-        mask <- ext
-        ext <- terra::ext(ext)
-      } else if(class(ext) == "SpatRaster"){
-        mask <- ext
-        ext <- terra::ext(ext)
-      } else if(!anyNA(ext)){
-        ext <- terra::ext(ext)
-      }
+    if(is(ext, "Extent")){
+      # ext is already of class Extent
+    } else if(is(ext, "SpatVector")){
+      mask <- ext
+      ext <- terra::ext(ext)
+    } else if(is(ext, "SpatRaster")){
+      mask <- ext
+      ext <- terra::ext(ext)
+    } else if(!anyNA(ext)){
+      ext <- terra::ext(ext)
     }
     
     # Obtain size and other specifications of file
@@ -60,7 +60,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
     lat <- ncdf4::ncvar_get(nc, var$dim[[2]]$name, start=1)
     
     # Specify range of y values
-    if(class(ext) == "Extent"){
+    if(is(ext, "Extent")){
       ny <- which(lat >= terra::ymin(ext) & lat <= terra::ymax(ext))
       lat <- lat[ny]
     } else{
@@ -79,7 +79,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
     
     # Specify longitude dimensions (either all or specific extent)
     count[1] <- varsize[1]
-    if(class(ext) == "Extent"){
+    if(is(ext, "Extent")){
       start[1] <- min(which(lon >= terra::xmin(ext) & lon <= terra::xmax(ext)))
       start <- as.numeric(start)
       end <-  max(which(lon >= terra::xmin(ext) & lon <= terra::xmax(ext)))
@@ -102,7 +102,9 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
     # Define start date
     if(is.na(startdate)){
       startdate <- time[1]
-    } else if(class(startdate) != "Date"){
+    } else if(is(startdate, "Date")){
+      # startdate is already in Date format
+    } else {
       startdate <- as.Date(paste0(startdate, "-01-01"))
     }
     
@@ -112,12 +114,14 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
       timeref <- as.Date(strsplit(nc$dim[[nc$ndims]]$units, " ")[[1]][3]) 
       if(ncdf4::ncvar_get(nc, nc$dim$time)[1] == 0){
         time <- timeref + ncdf4::ncvar_get(nc, nc$dim$time)
-      }else if (ncdf4::ncvar_get(nc, nc$dim$time)[1] != 1){
+      } else if (ncdf4::ncvar_get(nc, nc$dim$time)[1] != 1){
         time <- timeref + ncdf4::ncvar_get(nc, nc$dim$time) - 1
       }
       enddate <- time[length(time)]
       ncdf4::nc_close(nc)
-    } else if(class(enddate) != "Date"){
+    } else if(is(enddate, "Date")){
+      # enddate is already in Date format
+    } else{
       enddate <-  as.Date(paste0(enddate, "-12-31"))
     }
     
@@ -285,7 +289,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
       r_cv <- r_cv[,c(2,1,3:ncol(r_cv))]
       r_cv <- terra::rast(r_cv, type="xyz")
       names(r_cv) <- month.name
-      if(class(mask) == "SpatVector" | class(mask) == "SpatRaster"){
+      if(is(mask, "SpatVector") | is(mask, "SpatRaster")){
         r_z <- terra::mask(r_z, mask)
         r_cv <- terra::mask(r_cv, mask)
       }
@@ -302,7 +306,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
       r_cv <- r_cv[,c(2,1,3:ncol(r_cv))]
       r_cv <- terra::rast(r_cv, type="xyz")
       names(r_cv) <- unique(data$week)
-      if(class(mask) == "SpatVector" | class(mask) == "SpatRaster"){
+      if(is(mask, "SpatVector") | is(mask, "SpatRaster")){
         r_z <- terra::mask(r_z, mask)
         r_cv <- terra::mask(r_cv, mask)
       }
@@ -317,7 +321,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
       r_cv <- r_cv[,c(2,1,3:ncol(r_cv))]
       r_cv <- terra::rast(r_cv, type="xyz")
       names(r_cv) <- unique(data$year)
-      if(class(mask) == "SpatVector" | class(mask) == "SpatRaster"){
+      if(is(mask, "SpatVector") | is(mask, "SpatRaster")){
         r_z <- terra::mask(r_z, mask)
         r_cv <- terra::mask(r_cv, mask)
       }
@@ -332,7 +336,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
       r_cv <- r_cv[,c(2,1,3:ncol(r_cv))]
       r_cv <- terra::rast(r_cv, type="xyz")
       names(r_cv) <- as.character(unique(data$month))
-      if(class(mask) == "SpatVector" | class(mask) == "SpatRaster"){
+      if(is(mask, "SpatVector") | is(mask, "SpatRaster")){
         r_z <- terra::mask(r_z, mask)
         r_cv <- terra::mask(r_cv, mask)
       }
@@ -347,7 +351,7 @@ summariseNC <- function(files, startdate=NA, enddate=NA, ext=NA, group_col=c("ye
       r_cv <- r_cv[,c(2,1,3:ncol(r_cv))]
       r_cv <- terra::rast(r_cv, type="xyz")
       names(r_cv) <- as.character(unique(data$week))
-      if(class(mask) == "SpatVector" | class(mask) == "SpatRaster"){
+      if(is(mask, "SpatVector") | is(mask, "SpatRaster")){
         r_z <- terra::mask(r_z, mask)
         r_cv <- terra::mask(r_cv, mask)
       }
