@@ -92,7 +92,7 @@ summariseRast <- function(files=files, startdate=NA, enddate=NA, ext=NA, var,
     }
     if(filename2 != ""){
      # cv <- terra::tapp(data, index=index_time, fun=\(i) raster::cv(i))
-      cv <- terra::tapp(data, index=index_time, fun={(i) raster::cv(i)})
+      cv <- terra::tapp(data, index=index_time, fun= function(i){raster::cv(i)})
       terra::time(cv) <- unique(index_date)
       cv <- terra::tapp(cv, index=terra::time(cv, "months"), fun=sum, na.rm=TRUE)
       terra::time(cv) <- c(1:12)
